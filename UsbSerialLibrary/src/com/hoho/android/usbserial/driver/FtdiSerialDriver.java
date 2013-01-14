@@ -37,21 +37,21 @@ import java.util.Map;
 /**
  * A {@link UsbSerialDriver} implementation for a variety of FTDI devices
  * <p>
- * This driver is based on
- * <a href="http://www.intra2net.com/en/developer/libftdi">libftdi</a>, and is
+ * This driver is based on <a
+ * href="http://www.intra2net.com/en/developer/libftdi">libftdi</a>, and is
  * copyright and subject to the following terms:
- *
+ * 
  * <pre>
  *   Copyright (C) 2003 by Intra2net AG
- *
+ * 
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU Lesser General Public License
  *   version 2.1 as published by the Free Software Foundation;
- *
+ * 
  *   opensource@intra2net.com
  *   http://www.intra2net.com/en/developer/libftdi
  * </pre>
- *
+ * 
  * </p>
  * <p>
  * Some FTDI devices have not been tested; see later listing of supported and
@@ -80,10 +80,10 @@ import java.util.Map;
  * <li>{@value DeviceType#TYPE_BM}</li>
  * </ul>
  * </p>
- *
+ * 
  * @author mike wakerly (opensource@hoho.com)
  * @see <a href="http://code.google.com/p/usb-serial-for-android/">USB Serial
- * for Android project page</a>
+ *      for Android project page</a>
  * @see <a href="http://www.ftdichip.com/">FTDI Homepage</a>
  * @see <a href="http://www.intra2net.com/en/developer/libftdi">libftdi</a>
  */
@@ -178,7 +178,7 @@ public class FtdiSerialDriver extends UsbSerialDriver {
 
     /**
      * Constructor.
-     *
+     * 
      * @param usbDevice the {@link UsbDevice} to use
      * @param usbConnection the {@link UsbDeviceConnection} to use
      * @throws UsbSerialRuntimeException if the given device is incompatible
@@ -234,7 +234,7 @@ public class FtdiSerialDriver extends UsbSerialDriver {
             final int readAmt;
             synchronized (mReadBufferLock) {
                 // mReadBuffer is only used for maximum read size.
-                readAmt = Math.min(dest.length, mReadBuffer.length);
+                readAmt = Math.min(MODEM_STATUS_HEADER_LENGTH + dest.length, mReadBuffer.length);
             }
 
             final UsbRequest request = new UsbRequest();
@@ -261,7 +261,8 @@ public class FtdiSerialDriver extends UsbSerialDriver {
             final int totalBytesRead;
 
             synchronized (mReadBufferLock) {
-                final int readAmt = Math.min(dest.length, mReadBuffer.length);
+                final int readAmt = Math.min(MODEM_STATUS_HEADER_LENGTH + dest.length,
+                        mReadBuffer.length);
                 totalBytesRead = mConnection.bulkTransfer(endpoint, mReadBuffer,
                         readAmt, timeoutMillis);
             }
@@ -384,7 +385,7 @@ public class FtdiSerialDriver extends UsbSerialDriver {
     }
 
     private long[] convertBaudrate(int baudrate) {
-        // TODO(mikey): Braindead transcription of libfti method.  Clean up,
+        // TODO(mikey): Braindead transcription of libfti method. Clean up,
         // using more idiomatic Java where possible.
         int divisor = 24000000 / baudrate;
         int bestDivisor = 0;
