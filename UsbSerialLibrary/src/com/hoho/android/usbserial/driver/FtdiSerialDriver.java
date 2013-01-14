@@ -258,24 +258,30 @@ public class FtdiSerialDriver extends UsbSerialDriver {
                 return 0;
             }
         } else {
-            final int totalBytesRead;
-
             synchronized (mReadBufferLock) {
                 final int readAmt = Math.min(MODEM_STATUS_HEADER_LENGTH + dest.length,
                         mReadBuffer.length);
-                totalBytesRead = mConnection.bulkTransfer(endpoint, mReadBuffer,
+                final int totalBytesRead = mConnection.bulkTransfer(endpoint, mReadBuffer,
                         readAmt, timeoutMillis);
-            }
 
-            if (totalBytesRead < MODEM_STATUS_HEADER_LENGTH) {
-                throw new IOException("Expected at least " + MODEM_STATUS_HEADER_LENGTH + " bytes");
-            }
+                // From looking at the libftdi source, FTDI devices are
+                // apparently
+                // allowed to not
+                // provide status bytes.
+                if (totalBytesRead < MODEM_STATUS_HEADER_LENGTH) {
+                    // throw new IOException("Expected at least " +
+                    // MODEM_STATUS_HEADER_LENGTH + " bytes");
+                    return 0;
+                }
 
-            final int payloadBytesRead = totalBytesRead - MODEM_STATUS_HEADER_LENGTH;
-            if (payloadBytesRead > 0) {
-                System.arraycopy(mReadBuffer, MODEM_STATUS_HEADER_LENGTH, dest, 0, payloadBytesRead);
+                final int payloadBytesRead = totalBytesRead - MODEM_STATUS_HEADER_LENGTH;
+                if (payloadBytesRead > 0) {
+                    System.arraycopy(mReadBuffer, MODEM_STATUS_HEADER_LENGTH, dest, 0,
+                            payloadBytesRead);
+                }
+
+                return payloadBytesRead;
             }
-            return payloadBytesRead;
         }
     }
 
