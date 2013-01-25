@@ -338,6 +338,18 @@ public class FtdiSerialDriver extends UsbSerialDriver {
     }
 
     @Override
+    public void setFlowControl(int flowCtrl) throws IOException {
+        int index = 0; // Assume only one port for now
+
+        int result = mConnection.controlTransfer(FTDI_DEVICE_OUT_REQTYPE,
+                SIO_SET_FLOW_CTRL_REQUEST, 0, (flowCtrl << 8) | index,
+                null, 0, USB_WRITE_TIMEOUT_MILLIS);
+        if (result != 0) {
+            throw new IOException("Setting flowcontrol failed: result=" + result);
+        }
+    }
+
+    @Override
     public void setParameters(int baudRate, int dataBits, int stopBits, int parity)
             throws IOException {
         mBaudRate = setBaudRate(baudRate);

@@ -27,7 +27,7 @@ import java.io.IOException;
 
 /**
  * Driver interface for a supported USB serial device.
- *
+ * 
  * @author mike wakerly (opensource@hoho.com)
  */
 public abstract class UsbSerialDriver {
@@ -41,10 +41,10 @@ public abstract class UsbSerialDriver {
     protected final Object mReadBufferLock = new Object();
     protected final Object mWriteBufferLock = new Object();
 
-    /** Internal read buffer.  Guarded by {@link #mReadBufferLock}. */
+    /** Internal read buffer. Guarded by {@link #mReadBufferLock}. */
     protected byte[] mReadBuffer;
 
-    /** Internal write buffer.  Guarded by {@link #mWriteBufferLock}. */
+    /** Internal write buffer. Guarded by {@link #mWriteBufferLock}. */
     protected byte[] mWriteBuffer;
 
     public static final int DATABITS_5 = 5;
@@ -53,10 +53,9 @@ public abstract class UsbSerialDriver {
     public static final int DATABITS_8 = 8;
 
     public static final int FLOWCONTROL_NONE = 0;
-    public static final int FLOWCONTROL_RTSCTS_IN = 1;
-    public static final int FLOWCONTROL_RTSCTS_OUT = 2;
-    public static final int FLOWCONTROL_XONXOFF_IN = 4;
-    public static final int FLOWCONTROL_XONXOFF_OUT = 8;
+    public static final int FLOWCONTROL_RTSCTS = 1;
+    public static final int FLOWCONTROL_DTRDSR = 2;
+    public static final int FLOWCONTROL_XONXOFF = 4;
 
     public static final int PARITY_EVEN = 2;
     public static final int PARITY_MARK = 3;
@@ -82,21 +81,21 @@ public abstract class UsbSerialDriver {
     /**
      * Opens and initializes the device as a USB serial device. Upon success,
      * caller must ensure that {@link #close()} is eventually called.
-     *
+     * 
      * @throws IOException on error opening or initializing the device.
      */
     public abstract void open() throws IOException;
 
     /**
      * Closes the serial device.
-     *
+     * 
      * @throws IOException on error closing the device.
      */
     public abstract void close() throws IOException;
 
     /**
      * Reads as many bytes as possible into the destination buffer.
-     *
+     * 
      * @param dest the destination byte buffer
      * @param timeoutMillis the timeout for reading
      * @return the actual number of bytes read
@@ -106,7 +105,7 @@ public abstract class UsbSerialDriver {
 
     /**
      * Writes as many bytes as possible from the source buffer.
-     *
+     * 
      * @param src the source byte buffer
      * @param timeoutMillis the timeout for writing
      * @return the actual number of bytes written
@@ -116,18 +115,27 @@ public abstract class UsbSerialDriver {
 
     /**
      * Sets the baud rate of the serial device.
-     *
+     * 
      * @param baudRate the desired baud rate, in bits per second
      * @return the actual rate set
      * @throws IOException on error setting the baud rate
-     * @deprecated Use {@link #setParameters(int, int, int, int)} instead of this method.
+     * @deprecated Use {@link #setParameters(int, int, int, int)} instead of
+     *             this method.
      */
     @Deprecated
     public abstract int setBaudRate(final int baudRate) throws IOException;
 
     /**
+     * Sets the baud rate of the serial device.
+     * 
+     * @param flowCtrl one of the FLOWCONTROL_ constants
+     * @throws IOException on error setting the flow control
+     */
+    public abstract void setFlowControl(int flowCtrl) throws IOException;
+
+    /**
      * Sets various serial port parameters.
-     *
+     * 
      * @param baudRate baud rate as an integer, for example {@code 115200}.
      * @param dataBits one of {@link #DATABITS_5}, {@link #DATABITS_6},
      *            {@link #DATABITS_7}, or {@link #DATABITS_8}.
@@ -143,7 +151,7 @@ public abstract class UsbSerialDriver {
 
     /**
      * Gets the CD (Carrier Detect) bit from the underlying UART.
-     *
+     * 
      * @return the current state, or {@code false} if not supported.
      * @throws IOException if an error occurred during reading
      */
@@ -151,7 +159,7 @@ public abstract class UsbSerialDriver {
 
     /**
      * Gets the CTS (Clear To Send) bit from the underlying UART.
-     *
+     * 
      * @return the current state, or {@code false} if not supported.
      * @throws IOException if an error occurred during reading
      */
@@ -159,7 +167,7 @@ public abstract class UsbSerialDriver {
 
     /**
      * Gets the DSR (Data Set Ready) bit from the underlying UART.
-     *
+     * 
      * @return the current state, or {@code false} if not supported.
      * @throws IOException if an error occurred during reading
      */
@@ -167,7 +175,7 @@ public abstract class UsbSerialDriver {
 
     /**
      * Gets the DTR (Data Terminal Ready) bit from the underlying UART.
-     *
+     * 
      * @return the current state, or {@code false} if not supported.
      * @throws IOException if an error occurred during reading
      */
@@ -176,7 +184,7 @@ public abstract class UsbSerialDriver {
     /**
      * Sets the DTR (Data Terminal Ready) bit on the underlying UART, if
      * supported.
-     *
+     * 
      * @param value the value to set
      * @throws IOException if an error occurred during writing
      */
@@ -184,7 +192,7 @@ public abstract class UsbSerialDriver {
 
     /**
      * Gets the RI (Ring Indicator) bit from the underlying UART.
-     *
+     * 
      * @return the current state, or {@code false} if not supported.
      * @throws IOException if an error occurred during reading
      */
@@ -192,16 +200,15 @@ public abstract class UsbSerialDriver {
 
     /**
      * Gets the RTS (Request To Send) bit from the underlying UART.
-     *
+     * 
      * @return the current state, or {@code false} if not supported.
      * @throws IOException if an error occurred during reading
      */
     public abstract boolean getRTS() throws IOException;
 
     /**
-     * Sets the RTS (Request To Send) bit on the underlying UART, if
-     * supported.
-     *
+     * Sets the RTS (Request To Send) bit on the underlying UART, if supported.
+     * 
      * @param value the value to set
      * @throws IOException if an error occurred during writing
      */
@@ -209,7 +216,7 @@ public abstract class UsbSerialDriver {
 
     /**
      * Returns the currently-bound USB device.
-     *
+     * 
      * @return the device
      */
     public final UsbDevice getDevice() {
@@ -218,8 +225,8 @@ public abstract class UsbSerialDriver {
 
     /**
      * Sets the size of the internal buffer used to exchange data with the USB
-     * stack for read operations.  Most users should not need to change this.
-     *
+     * stack for read operations. Most users should not need to change this.
+     * 
      * @param bufferSize the size in bytes
      */
     public final void setReadBufferSize(int bufferSize) {
@@ -233,8 +240,8 @@ public abstract class UsbSerialDriver {
 
     /**
      * Sets the size of the internal buffer used to exchange data with the USB
-     * stack for write operations.  Most users should not need to change this.
-     *
+     * stack for write operations. Most users should not need to change this.
+     * 
      * @param bufferSize the size in bytes
      */
     public final void setWriteBufferSize(int bufferSize) {

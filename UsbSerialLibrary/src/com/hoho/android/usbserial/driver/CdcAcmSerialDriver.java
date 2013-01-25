@@ -1,3 +1,4 @@
+
 package com.hoho.android.usbserial.driver;
 
 import android.hardware.usb.UsbConstants;
@@ -13,7 +14,7 @@ import java.util.Map;
 
 /**
  * USB CDC/ACM serial driver implementation.
- *
+ * 
  * @author mike wakerly (opensource@hoho.com)
  * @see <a
  *      href="http://www.usb.org/developers/devclass_docs/usbcdc11.pdf">Universal
@@ -41,7 +42,7 @@ public class CdcAcmSerialDriver extends UsbSerialDriver {
     private static final int USB_RECIP_INTERFACE = 0x01;
     private static final int USB_RT_ACM = UsbConstants.USB_TYPE_CLASS | USB_RECIP_INTERFACE;
 
-    private static final int SET_LINE_CODING = 0x20;  // USB CDC 1.1 section 6.2
+    private static final int SET_LINE_CODING = 0x20; // USB CDC 1.1 section 6.2
     private static final int GET_LINE_CODING = 0x21;
     private static final int SET_CONTROL_LINE_STATE = 0x22;
     private static final int SEND_BREAK = 0x23;
@@ -89,6 +90,11 @@ public class CdcAcmSerialDriver extends UsbSerialDriver {
     private int sendAcmControlMessage(int request, int value, byte[] buf) {
         return mConnection.controlTransfer(
                 USB_RT_ACM, request, value, 0, buf, buf != null ? buf.length : 0, 5000);
+    }
+
+    @Override
+    public void setFlowControl(int flowCtrl) throws IOException {
+        throw new IOException("FlowControl not implemented yet for ACM devices");
     }
 
     @Override
@@ -162,46 +168,65 @@ public class CdcAcmSerialDriver extends UsbSerialDriver {
     public void setParameters(int baudRate, int dataBits, int stopBits, int parity) {
         byte stopBitsByte;
         switch (stopBits) {
-            case STOPBITS_1: stopBitsByte = 1; break;
-            case STOPBITS_1_5: stopBitsByte = 2; break;
-            case STOPBITS_2: stopBitsByte = 3; break;
-            default: throw new IllegalArgumentException("Bad value for stopBits: " + stopBits);
+            case STOPBITS_1:
+                stopBitsByte = 1;
+                break;
+            case STOPBITS_1_5:
+                stopBitsByte = 2;
+                break;
+            case STOPBITS_2:
+                stopBitsByte = 3;
+                break;
+            default:
+                throw new IllegalArgumentException("Bad value for stopBits: " + stopBits);
         }
 
         byte parityBitesByte;
         switch (parity) {
-            case PARITY_NONE: parityBitesByte = 0; break;
-            case PARITY_ODD: parityBitesByte = 1; break;
-            case PARITY_EVEN: parityBitesByte = 2; break;
-            case PARITY_MARK: parityBitesByte = 3; break;
-            case PARITY_SPACE: parityBitesByte = 4; break;
-            default: throw new IllegalArgumentException("Bad value for parity: " + parity);
+            case PARITY_NONE:
+                parityBitesByte = 0;
+                break;
+            case PARITY_ODD:
+                parityBitesByte = 1;
+                break;
+            case PARITY_EVEN:
+                parityBitesByte = 2;
+                break;
+            case PARITY_MARK:
+                parityBitesByte = 3;
+                break;
+            case PARITY_SPACE:
+                parityBitesByte = 4;
+                break;
+            default:
+                throw new IllegalArgumentException("Bad value for parity: " + parity);
         }
 
         byte[] msg = {
-                (byte) ( baudRate & 0xff),
-                (byte) ((baudRate >> 8 ) & 0xff),
+                (byte) (baudRate & 0xff),
+                (byte) ((baudRate >> 8) & 0xff),
                 (byte) ((baudRate >> 16) & 0xff),
                 (byte) ((baudRate >> 24) & 0xff),
                 stopBitsByte,
                 parityBitesByte,
-                (byte) dataBits};
+                (byte) dataBits
+        };
         sendAcmControlMessage(SET_LINE_CODING, 0, msg);
     }
 
     @Override
     public boolean getCD() throws IOException {
-        return false;  // TODO
+        return false; // TODO
     }
 
     @Override
     public boolean getCTS() throws IOException {
-        return false;  // TODO
+        return false; // TODO
     }
 
     @Override
     public boolean getDSR() throws IOException {
-        return false;  // TODO
+        return false; // TODO
     }
 
     @Override
@@ -217,7 +242,7 @@ public class CdcAcmSerialDriver extends UsbSerialDriver {
 
     @Override
     public boolean getRI() throws IOException {
-        return false;  // TODO
+        return false; // TODO
     }
 
     @Override
