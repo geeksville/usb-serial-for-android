@@ -23,7 +23,6 @@ package com.hoho.android.usbserial.driver;
 import android.hardware.usb.UsbConstants;
 import android.hardware.usb.UsbDevice;
 import android.hardware.usb.UsbDeviceConnection;
-import android.hardware.usb.UsbEndpoint;
 import android.hardware.usb.UsbRequest;
 import android.util.Log;
 
@@ -212,6 +211,12 @@ public class FtdiSerialDriver extends UsbSerialDriver {
                 }
             }
             reset();
+
+            mReadEndpoint = mDevice.getInterface(0).getEndpoint(0);
+            Log.d(TAG, "Read endpoint direction: " + mReadEndpoint.getDirection());
+            mWriteEndpoint = mDevice.getInterface(0).getEndpoint(1);
+            Log.d(TAG, "Write endpoint direction: " + mWriteEndpoint.getDirection());
+
             setParameters(DEFAULT_BAUD_RATE, DEFAULT_DATA_BITS, DEFAULT_STOP_BITS, DEFAULT_PARITY);
             opened = true;
         } finally {
@@ -228,7 +233,6 @@ public class FtdiSerialDriver extends UsbSerialDriver {
 
     @Override
     public int read(byte[] dest, int timeoutMillis) throws IOException {
-        final UsbEndpoint endpoint = mDevice.getInterface(0).getEndpoint(0);
 
         if (ENABLE_ASYNC_READS) {
             final int readAmt;
@@ -238,7 +242,7 @@ public class FtdiSerialDriver extends UsbSerialDriver {
             }
 
             final UsbRequest request = new UsbRequest();
-            request.initialize(mConnection, endpoint);
+            request.initialize(mConnection, mReadEndpoint);
 
             final ByteBuffer buf = ByteBuffer.wrap(dest);
             if (!request.queue(buf, readAmt)) {
@@ -261,7 +265,7 @@ public class FtdiSerialDriver extends UsbSerialDriver {
             synchronized (mReadBufferLock) {
                 final int readAmt = Math.min(MODEM_STATUS_HEADER_LENGTH + dest.length,
                         mReadBuffer.length);
-                final int totalBytesRead = mConnection.bulkTransfer(endpoint, mReadBuffer,
+                final int totalBytesRead = mConnection.bulkTransfer(mReadEndpoint, mReadBuffer,
                         readAmt, timeoutMillis);
 
                 // From looking at the libftdi source, FTDI devices are
@@ -287,7 +291,6 @@ public class FtdiSerialDriver extends UsbSerialDriver {
 
     @Override
     public int write(byte[] src, int timeoutMillis) throws IOException {
-        final UsbEndpoint endpoint = mDevice.getInterface(0).getEndpoint(1);
         int offset = 0;
 
         while (offset < src.length) {
@@ -306,7 +309,7 @@ public class FtdiSerialDriver extends UsbSerialDriver {
                     writeBuffer = mWriteBuffer;
                 }
 
-                amtWritten = mConnection.bulkTransfer(endpoint, writeBuffer, writeLength,
+                amtWritten = mConnection.bulkTransfer(mWriteEndpoint, writeBuffer, writeLength,
                         timeoutMillis);
             }
 
@@ -402,7 +405,7 @@ public class FtdiSerialDriver extends UsbSerialDriver {
         mDataBits = dataBits;
     }
 
-    private long[] convertBaudrate(int baudrate) {
+    public long[] convertBaudrate(int baudrate) {
         // TODO(mikey): Braindead transcription of libfti method. Clean up,
         // using more idiomatic Java where possible.
         int divisor = 24000000 / baudrate;

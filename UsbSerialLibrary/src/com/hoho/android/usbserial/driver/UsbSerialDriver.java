@@ -22,6 +22,7 @@ package com.hoho.android.usbserial.driver;
 
 import android.hardware.usb.UsbDevice;
 import android.hardware.usb.UsbDeviceConnection;
+import android.hardware.usb.UsbEndpoint;
 
 import java.io.IOException;
 
@@ -36,7 +37,12 @@ public abstract class UsbSerialDriver {
     public static final int DEFAULT_WRITE_BUFFER_SIZE = 16 * 1024;
 
     protected final UsbDevice mDevice;
-    protected final UsbDeviceConnection mConnection;
+
+    // FIXME - change back to protected once done debugging
+    public final UsbDeviceConnection mConnection;
+
+    public UsbEndpoint mReadEndpoint;
+    public UsbEndpoint mWriteEndpoint;
 
     protected final Object mReadBufferLock = new Object();
     protected final Object mWriteBufferLock = new Object();

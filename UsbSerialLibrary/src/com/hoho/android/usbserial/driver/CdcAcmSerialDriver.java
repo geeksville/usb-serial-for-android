@@ -28,8 +28,6 @@ public class CdcAcmSerialDriver extends UsbSerialDriver {
     private UsbInterface mDataInterface;
 
     private UsbEndpoint mControlEndpoint;
-    private UsbEndpoint mReadEndpoint;
-    private UsbEndpoint mWriteEndpoint;
 
     private int mBaudRate;
     private int mDataBits;
