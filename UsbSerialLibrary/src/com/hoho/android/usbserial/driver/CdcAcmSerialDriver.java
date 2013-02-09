@@ -59,7 +59,7 @@ public class CdcAcmSerialDriver extends UsbSerialDriver {
         // class should be USB_CLASS_COMM
 
         if (!mConnection.claimInterface(mControlInterface, true)) {
-            throw new IOException("Could not claim control interface.");
+            Log.e(TAG, "Could not claim control interface.");
         }
         mControlEndpoint = mControlInterface.getEndpoint(0);
         Log.d(TAG, "Control endpoint direction: " + mControlEndpoint.getDirection());
