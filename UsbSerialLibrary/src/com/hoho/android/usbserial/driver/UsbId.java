@@ -17,14 +17,13 @@
  *
  * Project home page: http://code.google.com/p/usb-serial-for-android/
  */
+
 package com.hoho.android.usbserial.driver;
 
 /**
- * Registry of USB vendor/product ID constants.
- *
- * Culled from various sources; see
+ * Registry of USB vendor/product ID constants. Culled from various sources; see
  * <a href="http://www.linux-usb.org/usb.ids">usb.ids</a> for one listing.
- *
+ * 
  * @author mike wakerly (opensource@hoho.com)
  */
 public final class UsbId {
@@ -45,6 +44,9 @@ public final class UsbId {
 
     public static final int VENDOR_VAN_OOIJEN_TECH = 0x16c0;
     public static final int VAN_OOIJEN_TECH_TEENSYDUINO_SERIAL = 0x0483;
+
+    public static final int PX4_VENDOR = 0x26ac;
+    public static final int PX4_DEV = 0x0011;
 
     private UsbId() {
         throw new IllegalAccessError("Non-instantiable class.");

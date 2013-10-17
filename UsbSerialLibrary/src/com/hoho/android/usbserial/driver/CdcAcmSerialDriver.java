@@ -1,16 +1,16 @@
 
 package com.hoho.android.usbserial.driver;
 
+import java.io.IOException;
+import java.util.LinkedHashMap;
+import java.util.Map;
+
 import android.hardware.usb.UsbConstants;
 import android.hardware.usb.UsbDevice;
 import android.hardware.usb.UsbDeviceConnection;
 import android.hardware.usb.UsbEndpoint;
 import android.hardware.usb.UsbInterface;
 import android.util.Log;
-
-import java.io.IOException;
-import java.util.LinkedHashMap;
-import java.util.Map;
 
 /**
  * USB CDC/ACM serial driver implementation.
@@ -276,6 +276,10 @@ public class CdcAcmSerialDriver extends UsbSerialDriver {
         supportedDevices.put(Integer.valueOf(UsbId.VENDOR_VAN_OOIJEN_TECH),
                 new int[] {
                     UsbId.VAN_OOIJEN_TECH_TEENSYDUINO_SERIAL,
+                });
+        supportedDevices.put(Integer.valueOf(UsbId.PX4_VENDOR),
+                new int[] {
+                    UsbId.PX4_DEV,
                 });
         return supportedDevices;
     }
