@@ -48,6 +48,10 @@ public final class UsbId {
     public static final int PX4_VENDOR = 0x26ac;
     public static final int PX4_DEV = 0x0011;
 
+    public static final int CP2102_VENDOR = 0x10C4;
+    public static final int CP2102_DEV1 = 24577;
+    public static final int CP2102_DEV2 = 60000;
+
     private UsbId() {
         throw new IllegalAccessError("Non-instantiable class.");
     }

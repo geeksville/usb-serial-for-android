@@ -281,6 +281,12 @@ public class CdcAcmSerialDriver extends UsbSerialDriver {
                 new int[] {
                     UsbId.PX4_DEV,
                 });
+
+        supportedDevices.put(Integer.valueOf(UsbId.CP2102_VENDOR),
+                new int[] {
+                        UsbId.CP2102_DEV1,
+                        UsbId.CP2102_DEV2
+                });
         return supportedDevices;
     }
 
