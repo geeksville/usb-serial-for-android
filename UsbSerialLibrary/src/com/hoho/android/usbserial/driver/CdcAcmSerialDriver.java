@@ -8,7 +8,6 @@ import java.util.Map;
 import android.hardware.usb.UsbConstants;
 import android.hardware.usb.UsbDevice;
 import android.hardware.usb.UsbDeviceConnection;
-import android.hardware.usb.UsbEndpoint;
 import android.hardware.usb.UsbInterface;
 import android.util.Log;
 
@@ -24,10 +23,10 @@ public class CdcAcmSerialDriver extends UsbSerialDriver {
 
     private final String TAG = CdcAcmSerialDriver.class.getSimpleName();
 
-    private UsbInterface mControlInterface;
+    // private UsbInterface mControlInterface;
     private UsbInterface mDataInterface;
 
-    private UsbEndpoint mControlEndpoint;
+    // private UsbEndpoint mControlEndpoint;
 
     private int mBaudRate;
     private int mDataBits;
@@ -53,19 +52,19 @@ public class CdcAcmSerialDriver extends UsbSerialDriver {
     public void open() throws IOException {
         Log.d(TAG, "claiming interfaces, count=" + mDevice.getInterfaceCount());
 
-        Log.d(TAG, "Claiming control interface.");
-        mControlInterface = mDevice.getInterface(0);
-        Log.d(TAG, "Control iface=" + mControlInterface);
-        // class should be USB_CLASS_COMM
-
-        if (!mConnection.claimInterface(mControlInterface, true)) {
-            Log.e(TAG, "Could not claim control interface.");
-        }
-        mControlEndpoint = mControlInterface.getEndpoint(0);
-        Log.d(TAG, "Control endpoint direction: " + mControlEndpoint.getDirection());
+        /*
+         * No point in claiming the control interface (and some devices might
+         * not have it -kevinh Log.d(TAG, "Claiming control interface.");
+         * mControlInterface = mDevice.getInterface(0); Log.d(TAG,
+         * "Control iface=" + mControlInterface); // class should be
+         * USB_CLASS_COMM if (!mConnection.claimInterface(mControlInterface,
+         * true)) { Log.e(TAG, "Could not claim control interface."); }
+         * mControlEndpoint = mControlInterface.getEndpoint(0); Log.d(TAG,
+         * "Control endpoint direction: " + mControlEndpoint.getDirection());
+         */
 
         Log.d(TAG, "Claiming data interface.");
-        mDataInterface = mDevice.getInterface(1);
+        mDataInterface = mDevice.getInterface(mDevice.getInterfaceCount() - 1);
         Log.d(TAG, "data iface=" + mDataInterface);
         // class should be USB_CLASS_CDC_DATA
 
