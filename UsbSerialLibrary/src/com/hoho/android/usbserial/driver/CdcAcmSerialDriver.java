@@ -91,7 +91,9 @@ public class CdcAcmSerialDriver extends UsbSerialDriver {
 
     @Override
     public void setFlowControl(int flowCtrl) throws IOException {
-        throw new IOException("FlowControl not implemented yet for ACM devices");
+        // Silently ignore
+        // throw new
+        // IOException("FlowControl not implemented yet for ACM devices");
     }
 
     @Override
